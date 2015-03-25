@@ -7,11 +7,15 @@
 
 <script src="threelib/build/three.min.js"></script>
 
+<script src="threelib/examples/js/renderers/Projector.js"></script>
+<script src="threelib/examples/js/renderers/CanvasRenderer.js"></script>
+
 <script>
 
     var scene, camera, renderer;
     var geometry, material, mesh;
-    var light1, light2, light3,
+    var particles, particle;
+    var mouseX = 0, mouseY = 0;
 
     init();
     animate();
@@ -25,16 +29,6 @@
 
         scene.add( new THREE.AmbientLight( 0x00020 ) );
 
-                light1 = new THREE.PointLight( 0xff0040, 1, 50 );
-                scene.add( light1 );
-
-                light2 = new THREE.PointLight( 0x0040ff, 1, 50 );
-                scene.add( light2 );
-
-                light3 = new THREE.PointLight( 0x80ff80, 1, 50 );
-                scene.add( light3 );
-
-        
         geometry = new THREE.BoxGeometry( 200, 200, 200 );
         material = new THREE.MeshBasicMaterial( { color: 0xff0000, wireframe: true } );
 
@@ -46,29 +40,78 @@
 
         document.body.appendChild( renderer.domElement );
 
+
+            var PI2 = Math.PI * 2;
+                material = new THREE.SpriteCanvasMaterial( {
+
+                    color: 0xffffff,
+                    program: function ( context ) {
+
+                        context.beginPath();
+                        context.arc( 0, 0, 0.5, 0, PI2, true );
+                        context.fill();
+
+                    }
+
+                } );
+
+                for ( var i = 0; i < 1000; i ++ ) {
+
+                    particle = new THREE.Sprite( material );
+                    particle.position.x = Math.random() * 2 - 1;
+                    particle.position.y = Math.random() * 2 - 1;
+                    particle.position.z = Math.random() * 2 - 1;
+                    particle.position.normalize();
+                    particle.position.multiplyScalar( Math.random() * 10 + 450 );
+                    particle.scale.multiplyScalar( 2 );
+                    scene.add( particle );
+
+                }
+
+                for (var i = 0; i < 800; i++) {
+
+                    var geometry = new THREE.Geometry();
+
+                    var vertex = new THREE.Vector3( Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * 2 - 1 );
+                    vertex.normalize();
+                    vertex.multiplyScalar( 450 );
+
+                    geometry.vertices.push( vertex );
+
+                    var vertex2 = vertex.clone();
+                    vertex2.multiplyScalar( Math.random() * 0.3 + 1 );
+
+                    geometry.vertices.push( vertex2 );
+
+                    var line = new THREE.Line( geometry, new THREE.LineBasicMaterial( { color: 0xffffff, opacity: Math.random() } ) );
+                    scene.add( line );
+                }
+
+                document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+
+
     }
 
+function onDocumentMouseMove(event) {
+
+                mouseX = event.clientX - window.innerWidth / 2;
+                mouseY = event.clientY - window.innerHeight / 2;
+
+}
     function animate() {
 
         requestAnimationFrame( animate );
 
         mesh.rotation.x += 0.01;
         mesh.rotation.y += 0.02;
-        
-                light1.position.x = Math.sin( time * 0.7 ) * 30;
-                light1.position.y = Math.cos( time * 0.5 ) * 40;
-                light1.position.z = Math.cos( time * 0.3 ) * 30;
-
-                light2.position.x = Math.cos( time * 0.3 ) * 30;
-                light2.position.y = Math.sin( time * 0.5 ) * 40;
-                light2.position.z = Math.sin( time * 0.7 ) * 30;
-
-                light3.position.x = Math.sin( time * 0.7 ) * 30;
-                light3.position.y = Math.cos( time * 0.3 ) * 40;
-                light3.position.z = Math.sin( time * 0.5 ) * 30;
+        camera.position.x += ( mouseX - camera.position.x ) * .05;
+        camera.position.y += ( - mouseY + 200 - camera.position.y ) * .05;
         renderer.render( scene, camera );
 
     }
+
+
+    
 
 </script>
 
