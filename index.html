@@ -11,6 +11,7 @@
 
     var scene, camera, renderer;
     var geometry, material, mesh;
+    var light1, light2, light3,
 
     init();
     animate();
@@ -22,6 +23,18 @@
         camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 );
         camera.position.z = 1000;
 
+        scene.add( new THREE.AmbientLight( 0x00020 ) );
+
+                light1 = new THREE.PointLight( 0xff0040, 1, 50 );
+                scene.add( light1 );
+
+                light2 = new THREE.PointLight( 0x0040ff, 1, 50 );
+                scene.add( light2 );
+
+                light3 = new THREE.PointLight( 0x80ff80, 1, 50 );
+                scene.add( light3 );
+
+        
         geometry = new THREE.BoxGeometry( 200, 200, 200 );
         material = new THREE.MeshBasicMaterial( { color: 0xff0000, wireframe: true } );
 
@@ -41,7 +54,18 @@
 
         mesh.rotation.x += 0.01;
         mesh.rotation.y += 0.02;
+        
+                light1.position.x = Math.sin( time * 0.7 ) * 30;
+                light1.position.y = Math.cos( time * 0.5 ) * 40;
+                light1.position.z = Math.cos( time * 0.3 ) * 30;
 
+                light2.position.x = Math.cos( time * 0.3 ) * 30;
+                light2.position.y = Math.sin( time * 0.5 ) * 40;
+                light2.position.z = Math.sin( time * 0.7 ) * 30;
+
+                light3.position.x = Math.sin( time * 0.7 ) * 30;
+                light3.position.y = Math.cos( time * 0.3 ) * 40;
+                light3.position.z = Math.sin( time * 0.5 ) * 30;
         renderer.render( scene, camera );
 
     }
